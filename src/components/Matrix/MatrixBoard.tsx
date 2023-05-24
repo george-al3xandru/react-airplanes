@@ -11,29 +11,34 @@ interface MatrixBoardProps {
 
 const MatrixBoard = (props: MatrixBoardProps) => {
   const handleClick = (rowIndex: number, colIndex: number) => {
-    if (!props.isGameFinished) {
-      if (props.board[rowIndex][colIndex] === null) {
-        const updatedBoard = props.board.map((row, rIndex) =>
-          row.map((cell, cIndex) =>
-            rIndex === rowIndex && cIndex === colIndex ? "missed" : cell
-          )
-        );
-        props.setBoard(updatedBoard);
-      } else if (props.board[rowIndex][colIndex] === "plane") {
-        const updatedBoard = props.board.map((row, rIndex) =>
-          row.map((cell, cIndex) =>
-            rIndex === rowIndex && cIndex === colIndex ? "hit" : cell
-          )
-        );
-        props.setBoard(updatedBoard);
-        props.setIsGameFinished(true);
-      }
-      props.setStrikes((prevValue) => prevValue + 1);
+    if (props.isGameFinished) {
+      return;
     }
+
+    const cellValue = props.board[rowIndex][colIndex];
+
+    if (cellValue === null) {
+      const updatedBoard = props.board.map((row, rIndex) =>
+        row.map((cell, cIndex) =>
+          rIndex === rowIndex && cIndex === colIndex ? "missed" : cell
+        )
+      );
+      props.setBoard(updatedBoard);
+    } else if (cellValue === "plane") {
+      const updatedBoard = props.board.map((row, rIndex) =>
+        row.map((cell, cIndex) =>
+          rIndex === rowIndex && cIndex === colIndex ? "hit" : cell
+        )
+      );
+      props.setBoard(updatedBoard);
+      props.setIsGameFinished(true);
+    } else return;
+
+    props.setStrikes((prevValue) => prevValue + 1);
   };
 
   return (
-    <Container size="xs" mt="50px">
+    <Container fluid mt="50px">
       {props.board.map((row, rowIndex) => (
         <Flex justify="center" key={rowIndex}>
           {row.map((cell, colIndex) => (

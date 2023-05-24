@@ -4,8 +4,8 @@ import { IconPlane } from "@tabler/icons-react";
 import { SettingsContext } from "../../context/SettingsProvider";
 
 const MatrixDimensions = () => {
-  const { length, setLength } = useContext(SettingsContext);
-  const [value, setValue] = useState(length);
+  const { size, setSize } = useContext(SettingsContext);
+  const [value, setValue] = useState(size);
 
   return (
     <>
@@ -13,7 +13,7 @@ const MatrixDimensions = () => {
       <Slider
         value={value}
         onChange={setValue}
-        onChangeEnd={setLength}
+        onChangeEnd={setSize}
         min={5}
         max={20}
         label={(value) => `${value}x${value}`}

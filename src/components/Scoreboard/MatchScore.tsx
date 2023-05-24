@@ -1,4 +1,5 @@
-import { Stack, Text } from "@mantine/core";
+import { Flex, Stack, Text } from "@mantine/core";
+import { IconBombFilled } from "@tabler/icons-react";
 
 interface Props {
   strikes: number;
@@ -14,7 +15,10 @@ const MatchScore = (props: Props) => {
           You won!
         </Text>
       )}
-      <Text fw="bolder">Strikes: {props.strikes}</Text>
+      <Flex gap="3px">
+        <IconBombFilled />
+        <Text fw="bolder">Strikes: {props.strikes}</Text>
+      </Flex>
     </Stack>
   );
 };

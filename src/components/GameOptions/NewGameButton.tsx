@@ -5,13 +5,15 @@ interface NewGameButtonProps {
   variant: Variants<
     "filled" | "outline" | "light" | "white" | "default" | "subtle" | "gradient"
   >;
-  initializeBoard: () => void;
+  reinitializeBoard: () => void;
 }
 
 const NewGameButton = (props: NewGameButtonProps) => {
   return (
     <Group position={props.position} mt="lg">
-      <Button variant={props.variant} onClick={props.initializeBoard}>Play again</Button>
+      <Button variant={props.variant} onClick={props.reinitializeBoard}>
+        Play again
+      </Button>
     </Group>
   );
 };

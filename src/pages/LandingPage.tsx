@@ -1,36 +1,71 @@
 import { useState, useEffect, useContext } from "react";
+import { v4 as uuidv4 } from "uuid";
 import MatrixBoard from "../components/Matrix/MatrixBoard";
 import NewGameButton from "../components/GameOptions/NewGameButton";
-
 import { SettingsContext } from "../context/SettingsProvider";
-import MatchScore from "../components/GameLogs/MatchScore";
+import MatchScore from "../components/Scoreboard/MatchScore";
+import ScoreboardButton from "../components/Scoreboard/ScoreboardButton";
+import { Scoreboard } from "../common/types";
 
 const LandingPage = () => {
   const [board, setBoard] = useState<string[][]>([]);
+  const [scoreboard, setScoreboard] = useState<Scoreboard[]>([]);
   const [strikes, setStrikes] = useState(0);
   const [isGameFinished, setIsGameFinished] = useState(false);
-  const { length } = useContext(SettingsContext);
+  const [timer, setTimer] = useState(0);
+  const { size } = useContext(SettingsContext);
 
-  const initializeBoard = () => {
-    const initialBoard = Array(length)
+  const initializeBoard = (size: number) => {
+    const initialBoard = Array(size)
       .fill(null)
-      .map(() => Array(length).fill(null));
-    const randomRowIndex = Math.floor(Math.random() * length);
-    const randomColIndex = Math.floor(Math.random() * length);
+      .map(() => Array(size).fill(null));
+    const randomRowIndex = Math.floor(Math.random() * size);
+    const randomColIndex = Math.floor(Math.random() * size);
     initialBoard[randomRowIndex][randomColIndex] = "plane";
     setBoard(initialBoard);
     setStrikes(0);
-    if (isGameFinished) {
-      setIsGameFinished(false);
-    }
+  };
+
+  const reinitializeBoard = () => {
+    initializeBoard(size);
+    setIsGameFinished(false);
+    setTimer(0);
+  };
+
+  const registerScore = () => {
+    const newScore = {
+      id: uuidv4(),
+      strikes: strikes,
+      date: new Date(),
+      time: timer,
+    };
+
+    setScoreboard((prevValues) => [...prevValues, newScore]);
   };
 
   useEffect(() => {
-    initializeBoard();
-  }, [length]); //eslint-disable-line
+    if (isGameFinished) registerScore();
+
+    let intervalId: NodeJS.Timeout | null = null;
+
+    if (!isGameFinished) {
+      intervalId = setInterval(() => {
+        setTimer((prevTimer) => prevTimer + 1);
+      }, 1000);
+    }
+
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [isGameFinished]); //eslint-disable-line
+
+  useEffect(() => {
+    initializeBoard(size);
+  }, [size]); //eslint-disable-line
 
   return (
     <>
+      <ScoreboardButton position="center" scoreboard={scoreboard} />
       <MatrixBoard
         board={board}
         setBoard={setBoard}
@@ -38,12 +73,16 @@ const LandingPage = () => {
         setIsGameFinished={setIsGameFinished}
         setStrikes={setStrikes}
       />
-      <MatchScore strikes={strikes} isGameFinished={isGameFinished} align="center"/>
+      <MatchScore
+        strikes={strikes}
+        isGameFinished={isGameFinished}
+        align="center"
+      />
       {isGameFinished && (
         <NewGameButton
           position="center"
           variant="outline"
-          initializeBoard={initializeBoard}
+          reinitializeBoard={reinitializeBoard}
         />
       )}
     </>
