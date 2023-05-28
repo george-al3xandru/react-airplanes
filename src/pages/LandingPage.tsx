@@ -6,22 +6,33 @@ import { SettingsContext } from "../context/SettingsProvider";
 import MatchScore from "../components/Scoreboard/MatchScore";
 import ScoreboardButton from "../components/Scoreboard/ScoreboardButton";
 import { Scoreboard } from "../common/types";
+import Airplanes from "../components/Scoreboard/Airplanes";
 
 const LandingPage = () => {
   const [board, setBoard] = useState<string[][]>([]);
   const [scoreboard, setScoreboard] = useState<Scoreboard[]>([]);
   const [strikes, setStrikes] = useState(0);
   const [isGameFinished, setIsGameFinished] = useState(false);
+  const [airplanesHit, setAirplanesHit] = useState(0);
   const [timer, setTimer] = useState(0);
-  const { size } = useContext(SettingsContext);
+
+  const { size, airplanes } = useContext(SettingsContext);
 
   const initializeBoard = (size: number) => {
     const initialBoard = Array(size)
       .fill(null)
       .map(() => Array(size).fill(null));
-    const randomRowIndex = Math.floor(Math.random() * size);
-    const randomColIndex = Math.floor(Math.random() * size);
-    initialBoard[randomRowIndex][randomColIndex] = "plane";
+
+    for (let i = 0; i < airplanes; i++) {
+      const randomRowIndex = Math.floor(Math.random() * size);
+      const randomColIndex = Math.floor(Math.random() * size);
+      let cellValue = initialBoard[randomRowIndex][randomColIndex];
+      if (cellValue === "plane") {
+        i--;
+      }
+      initialBoard[randomRowIndex][randomColIndex] = "plane";
+    }
+
     setBoard(initialBoard);
     setStrikes(0);
   };
@@ -29,6 +40,7 @@ const LandingPage = () => {
   const reinitializeBoard = () => {
     initializeBoard(size);
     setIsGameFinished(false);
+    setAirplanesHit(0)
     setTimer(0);
   };
 
@@ -61,7 +73,7 @@ const LandingPage = () => {
 
   useEffect(() => {
     initializeBoard(size);
-  }, [size]); //eslint-disable-line
+  }, [size, airplanes]); //eslint-disable-line
 
   return (
     <>
@@ -72,7 +84,10 @@ const LandingPage = () => {
         isGameFinished={isGameFinished}
         setIsGameFinished={setIsGameFinished}
         setStrikes={setStrikes}
+        airplanesHit={airplanesHit}
+        setAirplanesHit={setAirplanesHit}
       />
+      <Airplanes airplanes={airplanes} airplanesHit={airplanesHit}/>
       <MatchScore
         strikes={strikes}
         isGameFinished={isGameFinished}

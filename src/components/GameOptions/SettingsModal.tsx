@@ -1,6 +1,7 @@
-import { Flex, Modal, Text } from "@mantine/core";
+import { Flex, Modal, Text, Space } from "@mantine/core";
 import { IconSettings } from "@tabler/icons-react";
 import MatrixDimensions from "./MatrixDimensions";
+import AirplanesNumber from "./AirplanesNumber";
 
 interface SettingsModalProps {
   opened: boolean;
@@ -20,6 +21,8 @@ const SettingsModal = (props: SettingsModalProps) => {
   return (
     <Modal opened={props.opened} onClose={props.close} title={<ModalTitle />}>
       <MatrixDimensions />
+      <Space h={20} />
+      <AirplanesNumber />
     </Modal>
   );
 };

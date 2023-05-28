@@ -1,5 +1,7 @@
 import { Container, Flex } from "@mantine/core";
 import MatrixCell from "./MatrixCell";
+import { useState, useEffect, useContext } from "react";
+import { SettingsContext } from "../../context/SettingsProvider";
 
 interface MatrixBoardProps {
   board: string[][];
@@ -7,9 +9,13 @@ interface MatrixBoardProps {
   isGameFinished: boolean;
   setIsGameFinished: React.Dispatch<React.SetStateAction<boolean>>;
   setStrikes: React.Dispatch<React.SetStateAction<number>>;
+  airplanesHit: number;
+  setAirplanesHit: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const MatrixBoard = (props: MatrixBoardProps) => {
+  const { airplanes } = useContext(SettingsContext);
+ 
   const handleClick = (rowIndex: number, colIndex: number) => {
     if (props.isGameFinished) {
       return;
@@ -31,7 +37,10 @@ const MatrixBoard = (props: MatrixBoardProps) => {
         )
       );
       props.setBoard(updatedBoard);
-      props.setIsGameFinished(true);
+      props.setAirplanesHit((prevValue) => prevValue + 1);
+      if (props.airplanesHit === airplanes - 1) {
+        props.setIsGameFinished(true);
+      }
     } else return;
 
     props.setStrikes((prevValue) => prevValue + 1);
